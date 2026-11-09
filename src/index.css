@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-obsidian: 9 9 11;
+    --color-surface: 18 18 22;
+    --color-surface-elevated: 24 24 31;
+    --color-fg: 250 250 250;
+    --color-fg-muted: 161 161 170;
+    --color-fg-subtle: 113 113 122;
+    --color-indigo-glow: 99 102 241;
+    --color-indigo-deep: 79 70 229;
+    --color-emerald-glow: 16 185 129;
+    --color-emerald-deep: 5 150 105;
+    --color-danger-muted: 248 113 113;
+    --color-border-hairline: 255 255 255;
+  }
+
+  html {
+    background-color: rgb(var(--color-obsidian));
+    color: rgb(var(--color-fg));
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+    background-color: rgb(var(--color-obsidian));
+    color: rgb(var(--color-fg));
+  }
+}
+
+/* Architectural subtle background grid */
+.bg-architectural-grid {
+  background-size: 64px 64px;
+  background-image: 
+    linear-gradient(to right, rgb(var(--color-fg) / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--color-fg) / 0.035) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, black 35%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, black 35%, transparent 100%);
+}
+
+/* Continuous flowing light shimmer across headline text (#FAFAFA -> #6366F1 -> #10B981 -> #FAFAFA) */
+@keyframes textShimmerFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.text-shimmer-flow {
+  background-image: linear-gradient(
+    110deg,
+    #FAFAFA 0%,
+    #FAFAFA 28%,
+    #6366F1 48%,
+    #10B981 66%,
+    #FAFAFA 85%,
+    #FAFAFA 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: textShimmerFlow 5.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .text-shimmer-flow,
+  .animate-ping,
+  .animate-pulse {
+    animation: none !important;
+    transform: none !important;
+  }
+}

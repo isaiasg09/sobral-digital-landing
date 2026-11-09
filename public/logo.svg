@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-label="Sobral Digital">
+  <title>Sobral Digital</title>
+  <defs>
+    <linearGradient id="grad" x1="130" y1="110" x2="382" y2="402" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="256" cy="256" r="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6366F1" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#09090B" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.75 0" result="soft"/>
+      <feMerge>
+        <feMergeNode in="soft"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fundo -->
+  <rect width="512" height="512" rx="112" fill="#09090B"/>
+  <rect width="512" height="512" rx="112" fill="url(#bgGlow)"/>
+  <rect x="1" y="1" width="510" height="510" rx="111" stroke="#FAFAFA" stroke-opacity="0.08" stroke-width="2"/>
+
+  <!-- Prisma hexagonal (estrutura 3D) -->
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M256 106 L386 181 L386 331 L256 406 L126 331 L126 181 Z"
+          stroke="url(#grad)" stroke-opacity="0.55" stroke-width="2"/>
+    <path d="M256 256 L126 181 M256 256 L386 181 M256 256 L256 406"
+          stroke="#FAFAFA" stroke-opacity="0.10" stroke-width="2"/>
+  </g>
+
+  <!-- Monograma "S" com simetria rotacional -->
+  <g filter="url(#glow)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M332 190 L256 146 L180 190 L180 234 L332 278 L332 322 L256 366 L180 322"
+          stroke="url(#grad)" stroke-width="16"/>
+    <path d="M332 190 L256 146 L180 190 L180 234 L332 278 L332 322 L256 366 L180 322"
+          stroke="#FAFAFA" stroke-width="2" stroke-opacity="0.9"/>
+  </g>
+
+  <!-- Cursor digital na ponta final -->
+  <path d="M168 308 L168 346 L180 335 L190 354 L198 350 L188 331 L204 329 Z"
+        fill="#FAFAFA" stroke="#09090B" stroke-width="2" stroke-linejoin="round" transform="translate(-6 -4)"/>
+
+  <!-- Nós de vértice -->
+  <g fill="#FAFAFA">
+    <circle cx="332" cy="190" r="5"/>
+    <circle cx="256" cy="256" r="4" fill-opacity="0.9"/>
+    <circle cx="256" cy="146" r="3" fill-opacity="0.6"/>
+    <circle cx="256" cy="366" r="3" fill-opacity="0.6"/>
+  </g>
+</svg>
