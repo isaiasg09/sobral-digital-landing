@@ -218,14 +218,14 @@ export const ptContent = {
     ]
   },
   portfolio: {
-    eyebrow: 'VITRINE CINEMA SHOWCASE • PROJETOS AO VIVO',
+    eyebrow: 'PORTFÓLIO REAL • PROJETOS NO AR',
     h2: 'Estruturas Reais Que Transformaram Negócios Locais',
     subtitle:
-      'Não trabalhamos com moldes genéricos. Clique em qualquer projeto abaixo para abrir o Estudo de Caso completo, testar o site ao vivo em tamanho real (Desktop e Celular) e ver como resolvemos o desafio comercial de cada cliente.',
+      'Não trabalhamos com moldes genéricos. Explore abaixo nossos projetos em produção, entenda a estratégia aplicada e clique para navegar no site real em uma nova guia.',
     liveBadge: 'Site Ao Vivo',
-    openCaseStudyLabel: 'Abrir Estudo de Caso & Testar Site Ao Vivo',
+    openCaseStudyLabel: 'Abrir em Nova Guia',
     openExternalLabel: 'Abrir em Nova Guia',
-    viewAllPortfolioCta: 'Ver Vitrine Completa de Projetos & Estudos de Caso',
+    viewAllPortfolioCta: 'Ver Vitrine Completa de Projetos',
     caseStudyModal: {
       backLabel: 'Voltar para a Vitrine',
       desktopView: 'Visão Computador',

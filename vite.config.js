@@ -6,6 +6,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'esbuild'
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          animejs: ['animejs'],
+          framer: ['framer-motion']
+        }
+      }
+    }
   }
 });

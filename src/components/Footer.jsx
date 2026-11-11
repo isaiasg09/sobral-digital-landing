@@ -11,7 +11,7 @@ import { buildWhatsAppUrl } from '../config';
 import { useContent, getActiveSocialLinks } from '../content/pt';
 import { InteractiveLogo } from './InteractiveLogo';
 
-export function Footer({ onNavigateView, onOpenCaseStudy }) {
+export function Footer({ onNavigateView }) {
   const { brand, nav, portfolio, footer } = useContent();
   const activeSocials = getActiveSocialLinks();
   const currentYear = new Date().getFullYear();
@@ -86,25 +86,20 @@ export function Footer({ onNavigateView, onOpenCaseStudy }) {
             </h3>
             <ul className="space-y-2.5">
               {portfolio.items.map((item) => (
-                <li key={item.id} className="flex items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onOpenCaseStudy && onOpenCaseStudy(item)}
-                    className="text-left text-sm text-fg-muted hover:text-emerald-glow transition-colors cursor-pointer"
-                  >
-                    <span>{item.name}</span>{' '}
-                    <span className="text-xs text-fg-subtle">
-                      ({item.niche})
-                    </span>
-                  </button>
+                <li key={item.id}>
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Abrir site externo de ${item.name}`}
-                    className="text-indigo-glow hover:text-emerald-glow p-1"
+                    className="flex items-center justify-between gap-2 text-sm text-fg-muted hover:text-emerald-glow transition-colors group"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>
+                      <span>{item.name}</span>{' '}
+                      <span className="text-xs text-fg-subtle">
+                        ({item.niche})
+                      </span>
+                    </span>
+                    <ExternalLink className="w-3.5 h-3.5 text-indigo-glow group-hover:text-emerald-glow shrink-0" />
                   </a>
                 </li>
               ))}

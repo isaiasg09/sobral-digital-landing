@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { MessageCircle, Menu, X } from 'lucide-react';
 import { buildWhatsAppUrl } from './config';
 import { useContent } from './content/pt';
 import { InteractiveLogo } from './components/InteractiveLogo';
@@ -10,30 +10,51 @@ import { AnatomySection } from './components/AnatomySection';
 import { PortfolioShowcase } from './components/PortfolioShowcase';
 import { FastTrackProcess } from './components/FastTrackProcess';
 import { FAQSection } from './components/FAQSection';
-import { CaseStudyModal } from './components/CaseStudyModal';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { Footer } from './components/Footer';
 
 export function App() {
   const { brand, nav } = useContent();
   const [activeView, setActiveView] = useState('home');
-  const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const handleNavigateView = useCallback((viewId) => {
-    setSelectedCaseStudy(null);
+    setMobileMenuOpen(false);
     setActiveView(viewId);
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
 
-  const handleOpenCaseStudy = useCallback((project) => {
-    setSelectedCaseStudy(project);
-  }, []);
-
-  const handleCloseCaseStudy = useCallback(() => {
-    setSelectedCaseStudy(null);
-  }, []);
+  // Motion.dev View Transitions with Blur-Reveal & Spring Physics
+  const viewMotionVariants = {
+    initial: {
+      opacity: 0,
+      y: prefersReducedMotion ? 0 : 20,
+      filter: prefersReducedMotion ? 'none' : 'blur(8px)'
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        type: 'spring',
+        stiffness: 170,
+        damping: 22,
+        mass: 0.7
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: prefersReducedMotion ? 0 : -14,
+      filter: prefersReducedMotion ? 'none' : 'blur(6px)',
+      transition: {
+        duration: 0.22,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
 
   return (
     <div className="relative min-h-[100dvh] bg-obsidian text-fg overflow-x-hidden">
@@ -52,46 +73,34 @@ export function App() {
       />
 
       {/* Multi-Page / View Studio Navigation Header */}
-      <header className="fixed top-3 left-0 right-0 z-30 px-4 sm:px-6 lg:px-8">
+      <header className="fixed top-2 sm:top-3 left-0 right-0 z-30 px-3 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <nav
             aria-label="Navegação Principal do Estúdio"
-            className="flex flex-col md:flex-row items-center justify-between gap-2.5 rounded-3xl md:rounded-full px-4 sm:px-6 py-2.5 backdrop-blur-xl bg-surface/85 border border-hairline/15 shadow-inner-glint"
+            className="flex items-center justify-between gap-2 rounded-full px-3 sm:px-6 py-2 sm:py-2.5 backdrop-blur-xl bg-surface/90 border border-hairline/15 shadow-inner-glint"
           >
-            <div className="w-full md:w-auto flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => handleNavigateView('home')}
-                className="inline-flex items-center gap-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-glow rounded-full cursor-pointer"
-              >
-                <InteractiveLogo size={34} interactive={true} />
-                <div>
-                  <span className="block font-display font-bold text-sm sm:text-base text-fg tracking-tight leading-none">
-                    {brand.name}
-                  </span>
-                  <span className="hidden xl:block font-mono text-[10px] text-fg-subtle mt-0.5">
-                    {brand.tagline}
-                  </span>
-                </div>
-              </button>
+            {/* Brand Logo */}
+            <button
+              type="button"
+              onClick={() => handleNavigateView('home')}
+              className="inline-flex items-center gap-2 sm:gap-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-glow rounded-full cursor-pointer shrink-0"
+            >
+              <InteractiveLogo size={30} interactive={true} />
+              <div>
+                <span className="block font-display font-bold text-sm sm:text-base text-fg tracking-tight leading-none">
+                  {brand.name}
+                </span>
+                <span className="hidden xl:block font-mono text-[10px] text-fg-subtle mt-0.5">
+                  {brand.tagline}
+                </span>
+              </div>
+            </button>
 
-              {/* Mobile Direct WhatsApp CTA */}
-              <a
-                href={buildWhatsAppUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="md:hidden inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 bg-emerald-deep text-fg text-xs font-semibold border border-emerald-glow/40 shrink-0"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>Diagnóstico</span>
-              </a>
-            </div>
-
-            {/* 3 Dedicated Studio Views Switcher */}
+            {/* Desktop Switcher Tabs */}
             <div
               role="tablist"
               aria-label="Áreas do Estúdio"
-              className="w-full md:w-auto flex items-center justify-center gap-1 p-1 rounded-full bg-obsidian/80 border border-hairline/10 overflow-x-auto"
+              className="hidden md:flex items-center justify-center gap-1 p-1 rounded-full bg-obsidian/80 border border-hairline/10"
             >
               {nav.views.map((view) => {
                 const isCurrent = activeView === view.id;
@@ -102,7 +111,7 @@ export function App() {
                     type="button"
                     aria-selected={isCurrent}
                     onClick={() => handleNavigateView(view.id)}
-                    className={`rounded-full px-3.5 sm:px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-glow ${
+                    className={`rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-glow ${
                       isCurrent
                         ? 'bg-indigo-deep text-fg shadow-indigo-aura border border-indigo-glow/50'
                         : 'text-fg-muted hover:text-fg'
@@ -124,29 +133,85 @@ export function App() {
               <MessageCircle className="w-3.5 h-3.5 text-emerald-glow" />
               <span>{nav.ctaLabel}</span>
             </a>
+
+            {/* Mobile Right Controls (Compact CTA + Menu Toggle - Zero Scrollbar) */}
+            <div className="flex md:hidden items-center gap-2">
+              <a
+                href={buildWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 bg-emerald-deep text-fg text-xs font-semibold border border-emerald-glow/40 shrink-0"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>Diagnóstico</span>
+              </a>
+
+              <button
+                type="button"
+                aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+                aria-expanded={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                className="w-9 h-9 rounded-full bg-obsidian/90 border border-hairline/15 flex items-center justify-center text-fg hover:border-indigo-glow/50 transition-colors cursor-pointer"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-4 h-4" />
+                ) : (
+                  <Menu className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </nav>
+
+          {/* Mobile Dropdown Drawer */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="md:hidden mt-2 p-2 rounded-2xl backdrop-blur-xl bg-surface/95 border border-hairline/15 shadow-elevated-card flex flex-col gap-1"
+              >
+                {nav.views.map((view) => {
+                  const isCurrent = activeView === view.id;
+                  return (
+                    <button
+                      key={view.id}
+                      type="button"
+                      onClick={() => handleNavigateView(view.id)}
+                      className={`w-full text-left rounded-xl px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer ${
+                        isCurrent
+                          ? 'bg-indigo-deep text-fg border border-indigo-glow/50'
+                          : 'text-fg-muted hover:text-fg hover:bg-surface-elevated/60'
+                      }`}
+                    >
+                      {view.label}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
-      {/* Multi-View Main Content Area */}
+      {/* Multi-View Main Content Area with Blur-Reveal Spring Transitions */}
       <main id="conteudo-principal" className="relative z-10">
         <AnimatePresence mode="wait">
           {activeView === 'home' && (
             <motion.div
               key="view-home"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
+              variants={viewMotionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
             >
               <Hero
                 onNavigatePortfolio={() => handleNavigateView('portfolio')}
-                onOpenCaseStudy={handleOpenCaseStudy}
               />
               <ProblemAuthority />
               <AnatomySection />
               <PortfolioShowcase
-                onOpenCaseStudy={handleOpenCaseStudy}
                 onNavigateFullPortfolio={() => handleNavigateView('portfolio')}
                 isFullPage={false}
               />
@@ -158,13 +223,12 @@ export function App() {
           {activeView === 'portfolio' && (
             <motion.div
               key="view-portfolio"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
+              variants={viewMotionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
             >
               <PortfolioShowcase
-                onOpenCaseStudy={handleOpenCaseStudy}
                 isFullPage={true}
               />
               <AnatomySection />
@@ -175,32 +239,24 @@ export function App() {
           {activeView === 'process' && (
             <motion.div
               key="view-process"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="pt-12"
+              variants={viewMotionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="pt-16 md:pt-12"
             >
               <FastTrackProcess />
               <AnatomySection />
-              <ProblemAuthority />
+              
               <FAQSection />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* Full-Scale Interactive Case Study Modal (Desktop / Mobile Live Iframe + Business Breakdown) */}
-      <CaseStudyModal
-        project={selectedCaseStudy}
-        onClose={handleCloseCaseStudy}
-        onSelectProject={handleOpenCaseStudy}
-      />
-
       {/* Footer & Floating WhatsApp Concierge */}
       <Footer
         onNavigateView={handleNavigateView}
-        onOpenCaseStudy={handleOpenCaseStudy}
       />
       <FloatingWhatsApp />
     </div>

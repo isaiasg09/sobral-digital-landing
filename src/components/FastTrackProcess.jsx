@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   motion,
   useScroll,
   useSpring,
   useReducedMotion
 } from 'framer-motion';
+import { animate, stagger } from 'animejs';
 import { Compass, Sliders, Rocket, MessageCircle } from 'lucide-react';
 import { buildWhatsAppUrl } from '../config';
 import { useContent } from '../content/pt';
@@ -13,9 +14,11 @@ import { useMagnetic } from '../hooks/useMagnetic';
 export function FastTrackProcess() {
   const { process } = useContent();
   const sectionRef = useRef(null);
+  const stepsContainerRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const ctaMagnetic = useMagnetic({ strength: 0.25, maxOffset: 10 });
 
+  // Motion.dev scroll-driven connection line
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start 75%', 'end 65%']
@@ -26,6 +29,47 @@ export function FastTrackProcess() {
     damping: 24,
     mass: 0.3
   });
+
+  // Anime.js Step Nodes Energy Flow Choreography
+  useEffect(() => {
+    const el = stepsContainerRef.current;
+    if (!el || prefersReducedMotion) return;
+
+    const badges = el.querySelectorAll('.process-step-badge');
+    const icons = el.querySelectorAll('.process-icon-wrap');
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Sequential pulse wave across step icons and badges using Anime.js
+          animate(icons, {
+            scale: [0.9, 1.08, 1],
+            borderColor: [
+              'rgba(255, 255, 255, 0.1)',
+              'rgba(16, 185, 129, 0.6)',
+              'rgba(99, 102, 241, 0.4)'
+            ],
+            delay: stagger(220, { start: 150 }),
+            duration: 900,
+            ease: 'outBack'
+          });
+
+          animate(badges, {
+            opacity: [0.4, 1],
+            translateY: [6, 0],
+            delay: stagger(220, { start: 250 }),
+            duration: 700,
+            ease: 'outExpo'
+          });
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [prefersReducedMotion]);
 
   const stepIcons = [Compass, Sliders, Rocket];
 
@@ -45,6 +89,9 @@ export function FastTrackProcess() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-3xl mb-14 md:mb-20"
         >
+          <span className="inline-block font-mono text-xs uppercase tracking-[0.2em] text-emerald-glow mb-3">
+            {process.eyebrow}
+          </span>
           <h2
             id="process-heading"
             className="font-display font-bold text-2xl sm:text-4xl lg:text-[2.65rem] tracking-tight text-fg leading-[1.12] mb-4"
@@ -57,7 +104,7 @@ export function FastTrackProcess() {
         </motion.div>
 
         {/* Timeline Stage with Scroll-Driven SVG Connecting Line */}
-        <div className="relative">
+        <div ref={stepsContainerRef} className="relative">
           {/* Desktop Horizontal SVG Connecting Line (animates pathLength with scroll) */}
           <div
             aria-hidden="true"
@@ -71,9 +118,9 @@ export function FastTrackProcess() {
             >
               <defs>
                 <linearGradient id="processLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="rgb(var(--color-indigo-glow))" />
-                  <stop offset="50%" stopColor="rgb(var(--color-emerald-glow))" />
-                  <stop offset="100%" stopColor="rgb(var(--color-emerald-glow))" />
+                  <stop offset="0%" stopColor="#6366F1" />
+                  <stop offset="50%" stopColor="#10B981" />
+                  <stop offset="100%" stopColor="#10B981" />
                 </linearGradient>
               </defs>
               {/* Static Background Track */}
@@ -115,7 +162,7 @@ export function FastTrackProcess() {
               />
               <motion.path
                 d="M 8 0 L 8 600"
-                stroke="rgb(var(--color-emerald-glow))"
+                stroke="#10B981"
                 strokeWidth="3"
                 strokeLinecap="round"
                 style={{
@@ -152,7 +199,7 @@ export function FastTrackProcess() {
                     <div>
                       <div className="flex items-center justify-between gap-3 mb-6">
                         <div
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
+                          className={`process-icon-wrap w-12 h-12 rounded-2xl flex items-center justify-center border transition-all ${
                             isFinalStep
                               ? 'bg-emerald-deep/25 border-emerald-glow/40 text-emerald-glow'
                               : 'bg-indigo-deep/25 border-indigo-glow/40 text-indigo-glow'
@@ -161,7 +208,7 @@ export function FastTrackProcess() {
                           <StepIcon className="w-5 h-5" />
                         </div>
                         <span
-                          className={`font-mono text-xs px-3 py-1 rounded-full border ${
+                          className={`process-step-badge font-mono text-xs px-3 py-1 rounded-full border ${
                             isFinalStep
                               ? 'bg-emerald-deep/20 border-emerald-glow/35 text-emerald-glow'
                               : 'bg-surface-elevated border-hairline/15 text-fg-muted'
@@ -190,7 +237,11 @@ export function FastTrackProcess() {
           initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 22 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.6, delay: prefersReducedMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
+          transition={{
+            duration: 0.6,
+            delay: prefersReducedMotion ? 0 : 0.15,
+            ease: [0.22, 1, 0.36, 1]
+          }}
           className="mt-14 md:mt-20 p-1.5 rounded-[2rem] bg-indigo-deep/15 border border-indigo-glow/30 shadow-indigo-aura"
         >
           <div className="rounded-[calc(2rem-0.375rem)] bg-surface-elevated/95 border border-hairline/15 p-7 sm:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-inner-glint">
